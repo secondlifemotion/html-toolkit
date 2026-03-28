@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Toolkit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Outfit:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #00587C;
+  --red: #eb2d37;
+  --cream: #f8f5e9;
+  --charcoal: #07181E;
+  --cobalt: #685ef7;
+  --green: #25D366;
+  --gold: #cc9f11;
+  --surface: rgba(248,245,233,0.04);
+  --border: rgba(248,245,233,0.1);
+  --transition: all 0.25s cubic-bezier(0.4, 0.14, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 400;
+  background: var(--charcoal);
+  color: var(--cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; top: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,88,124,0.2) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; bottom: -150px; left: -150px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(235,45,55,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 40px;
+  border-bottom: 1px solid rgba(248,245,233,0.08);
+  backdrop-filter: blur(8px);
+}
+.header-brand { display: flex; align-items: center; gap: 14px; }
+.slm-color-logo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  line-height: 1; -webkit-font-smoothing: antialiased; font-size: 32px;
+  color: var(--red);
+  letter-spacing: -0.05em;
+}
+.header-title span:first-child {
+  display: block; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(248,245,233,0.4); margin-bottom: 2px;
+}
+.header-title strong { font-size: 20px; letter-spacing: -0.03em; font-weight: 400; }
+.header-badge {
+  background: rgba(104,94,247,0.15); border: 1px solid rgba(104,94,247,0.3);
+  color: #a09ffc; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 20px;
+}
+
+/* ── APP TABS ── */
+.app-tabs {
+  position: relative; z-index: 9;
+  display: flex; gap: 0;
+  border-bottom: 1px solid rgba(248,245,233,0.08);
+  padding: 0 40px;
+  background: rgba(7,24,30,0.5);
+  backdrop-filter: blur(8px);
+}
+.app-tab {
+  padding: 16px 24px; cursor: pointer;
+  font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: rgba(248,245,233,0.4);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: var(--transition);
+  display: flex; align-items: center; gap: 8px;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  white-space: nowrap;
+}
+.app-tab:hover { color: rgba(248,245,233,0.75); }
+.app-tab.active { color: var(--cream); border-bottom-color: var(--red); }
+.app-tab-icon { font-size: 16px; }
+
+/* ── TAB PANES ── */
+.tab-pane { display: none; }
+.tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SHARED ── */
+main { position: relative; z-index: 1; max-width: 1020px; margin: 0 auto; padding: 40px 32px; }
+
+.page-heading { text-align: center; margin-bottom: 40px; }
+.page-heading h1 {
+  font-size: clamp(30px, 4.5vw, 50px); letter-spacing: -0.04em;
+  font-weight: 400; line-height: 1.05;
+}
+.page-heading h1 em { font-style: normal; color: var(--red); }
+.page-heading p { margin-top: 10px; font-size: 14px; color: rgba(248,245,233,0.45); }
+
+label {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(248,245,233,0.4); font-weight: 500;
+}
+input, textarea, select {
+  background: rgba(7,24,30,0.5); border: 1.5px solid rgba(248,245,233,0.12);
+  border-radius: 8px; padding: 11px 14px; color: var(--cream);
+  font-family: 'Montserrat', system-ui, sans-serif; font-size: 14px;
+  transition: var(--transition); outline: none; width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--blue); background: rgba(0,88,124,0.1);
+  box-shadow: 0 0 0 3px rgba(0,88,124,0.15);
+}
+input::placeholder, textarea::placeholder { color: rgba(248,245,233,0.2); }
+select option { background: #0d1f28; color: var(--cream); }
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+input[type="color"] { height: 42px; padding: 3px 6px; cursor: pointer; }
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+
+.btn {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  border-radius: 10px; padding: 12px 20px; cursor: pointer;
+  transition: var(--transition); border: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--red); color: white; }
+.btn-primary:hover { background: #d01f29; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(235,45,55,0.3); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary { background: rgba(248,245,233,0.07); border: 1px solid rgba(248,245,233,0.15); color: var(--cream); }
+.btn-secondary:hover { background: rgba(248,245,233,0.12); }
+.btn-blue { background: var(--blue); color: white; }
+.btn-blue:hover { background: #006a96; transform: translateY(-1px); }
+.btn-full { width: 100%; justify-content: center; padding: 15px 24px; font-size: 14px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; margin-bottom: 20px;
+}
+
+.error-msg {
+  background: rgba(235,45,55,0.12); border: 1px solid rgba(235,45,55,0.25);
+  color: #ff8a8f; border-radius: 10px; padding: 12px 16px; font-size: 13px;
+  display: none; margin-bottom: 16px;
+}
+.error-msg.visible { display: block; animation: fadeIn 0.2s ease; }
+.success-msg {
+  background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.25);
+  color: #7dd5a7; border-radius: 10px; padding: 12px 16px; font-size: 13px;
+  display: none; margin-bottom: 16px;
+}
+.success-msg.visible { display: block; animation: fadeIn 0.2s ease; }
+
+/* ══════════════════════════════
+   TAB 1 — QR STUDIO
+══════════════════════════════ */
+
+.type-selector {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px;
+}
+@media (max-width: 600px) { .type-selector { grid-template-columns: repeat(2, 1fr); } }
+
+.type-btn {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 10px; cursor: pointer;
+  transition: var(--transition); display: flex; flex-direction: column; align-items: center; gap: 7px;
+  color: rgba(248,245,233,0.45); font-family: 'Montserrat', system-ui, sans-serif;
+  font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.type-btn:hover { background: rgba(248,245,233,0.08); border-color: rgba(248,245,233,0.25); color: var(--cream); transform: translateY(-2px); }
+.type-btn.active { background: rgba(0,88,124,0.22); border-color: var(--blue); color: var(--cream); box-shadow: 0 0 0 1px rgba(0,88,124,0.25); }
+.type-icon { font-size: 24px; line-height: 1; transition: var(--transition); }
+.type-btn.active .type-icon { transform: scale(1.1); }
+
+.field-group { display: none; }
+.field-group.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* WhatsApp special */
+.type-btn.whatsapp.active { background: rgba(37,211,102,0.15); border-color: var(--green); }
+
+
+.options-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+@media (max-width: 560px) { .options-row { grid-template-columns: 1fr 1fr; } }
+.option-field { display: flex; flex-direction: column; gap: 6px; }
+
+/* QR output */
+.qr-output { display: none; }
+.qr-output.visible { display: block; animation: slideUp 0.4s ease; }
+.qr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; display: flex; gap: 36px; align-items: flex-start; }
+@media (max-width: 640px) { .qr-card { flex-direction: column; align-items: center; } }
+.qr-visual { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#qr-container { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 4px 32px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; min-width: 180px; min-height: 180px; }
+#qr-container canvas, #qr-container img { border-radius: 4px; }
+.qr-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.qr-meta { flex: 1; }
+.qr-meta h3 { font-size: 20px; letter-spacing: -0.03em; font-weight: 400; margin-bottom: 6px; }
+.qr-type-badge { display: inline-block; background: rgba(0,88,124,0.22); border: 1px solid rgba(0,88,124,0.38); color: #6fc4ea; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 14px; }
+.qr-data-preview { background: rgba(7,24,30,0.5); border: 1px solid rgba(248,245,233,0.08); border-radius: 8px; padding: 12px; font-size: 11px; color: rgba(248,245,233,0.45); line-height: 1.6; word-break: break-all; font-family: 'Courier New', monospace; max-height: 110px; overflow-y: auto; margin-bottom: 14px; }
+.qr-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(248,245,233,0.3); }
+.stat-value { font-size: 14px; }
+
+/* ══════════════════════════════
+   TAB 2 — FILE TRANSFORMER
+══════════════════════════════ */
+
+.sub-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+.sub-tab {
+  padding: 9px 20px; border-radius: 30px; cursor: pointer;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  transition: var(--transition); border: 1.5px solid rgba(248,245,233,0.12);
+  background: var(--surface); color: rgba(248,245,233,0.4);
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+.sub-tab:hover { border-color: rgba(248,245,233,0.25); color: var(--cream); }
+.sub-tab.active { background: rgba(0,88,124,0.22); border-color: var(--blue); color: var(--cream); }
+
+.sub-pane { display: none; }
+.sub-pane.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* Drop zone */
+.drop-zone {
+  border: 2px dashed rgba(248,245,233,0.18); border-radius: 16px;
+  padding: 48px 24px; text-align: center; cursor: pointer;
+  transition: var(--transition); margin-bottom: 20px;
+  background: var(--surface);
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--blue); background: rgba(0,88,124,0.08);
+}
+.drop-icon { font-size: 40px; margin-bottom: 12px; line-height: 1; }
+.drop-title { font-size: 18px; letter-spacing: -0.02em; margin-bottom: 6px; }
+.drop-sub { font-size: 13px; color: rgba(248,245,233,0.4); margin-bottom: 16px; }
+.drop-formats { font-size: 11px; color: rgba(248,245,233,0.3); letter-spacing: 0.04em; }
+.drop-zone input[type="file"] { display: none; }
+
+/* File queue */
+.file-queue { margin-bottom: 20px; }
+.file-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+  animation: fadeIn 0.2s ease;
+}
+.file-item-icon { font-size: 22px; flex-shrink: 0; }
+.file-item-info { flex: 1; min-width: 0; }
+.file-item-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-item-size { font-size: 11px; color: rgba(248,245,233,0.35); margin-top: 2px; }
+.file-item-remove { background: none; border: none; color: rgba(248,245,233,0.3); cursor: pointer; font-size: 16px; padding: 4px; transition: var(--transition); }
+.file-item-remove:hover { color: var(--red); }
+.file-item-status { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.status-ready { color: rgba(248,245,233,0.3); }
+.status-processing { color: #a09ffc; animation: pulse-text 1s infinite; }
+.status-done { color: #7dd5a7; }
+.status-error { color: #ff8a8f; }
+@keyframes pulse-text { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+/* Converter options */
+.converter-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+  margin-bottom: 20px;
+}
+.conv-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 12px; cursor: pointer;
+  transition: var(--transition); text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.conv-card:hover { background: rgba(248,245,233,0.07); border-color: rgba(248,245,233,0.22); transform: translateY(-2px); }
+.conv-card.active { background: rgba(0,88,124,0.2); border-color: var(--blue); }
+.conv-icon { font-size: 22px; }
+.conv-label { font-size: 11px; letter-spacing: 0.04em; color: rgba(248,245,233,0.6); }
+.conv-arrow { font-size: 10px; color: rgba(248,245,233,0.3); }
+.conv-card.active .conv-label { color: var(--cream); }
+
+/* Format selector row */
+.format-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.format-row label { white-space: nowrap; flex-shrink: 0; }
+.format-row select { flex: 1; min-width: 120px; }
+.format-arrow { color: rgba(248,245,233,0.3); font-size: 18px; flex-shrink: 0; }
+
+/* Compression options */
+.compress-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media (max-width: 540px) { .compress-opts { grid-template-columns: 1fr; } }
+.range-field { display: flex; flex-direction: column; gap: 8px; }
+.range-row { display: flex; align-items: center; gap: 10px; }
+input[type="range"] {
+  flex: 1; -webkit-appearance: none; height: 4px; border-radius: 4px;
+  background: rgba(248,245,233,0.15); outline: none; padding: 0; border: none;
+  box-shadow: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--blue); cursor: pointer; box-shadow: 0 0 0 3px rgba(0,88,124,0.2);
+}
+input[type="range"]:focus { border: none; box-shadow: none; background: rgba(248,245,233,0.2); }
+.range-val { font-size: 13px; min-width: 36px; text-align: right; color: var(--cream); }
+
+/* Progress bar */
+.progress-bar-wrap { background: rgba(248,245,233,0.08); border-radius: 4px; height: 6px; margin-top: 8px; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 4px; background: var(--blue); transition: width 0.3s ease; }
+
+/* Result area */
+.result-area {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; margin-top: 20px; display: none;
+}
+.result-area.visible { display: block; animation: slideUp 0.35s ease; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 540px) { .result-grid { grid-template-columns: 1fr; } }
+.result-item {
+  background: rgba(7,24,30,0.4); border: 1px solid rgba(248,245,233,0.08);
+  border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.result-item-header { display: flex; align-items: center; gap: 8px; }
+.result-item-icon { font-size: 20px; }
+.result-item-name { font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.result-meta { display: flex; justify-content: space-between; align-items: center; }
+.result-size { font-size: 11px; color: rgba(248,245,233,0.4); }
+.result-saving { font-size: 11px; font-weight: 500; }
+.saving-pos { color: #7dd5a7; }
+.saving-neg { color: #ff8a8f; }
+.result-actions { display: flex; gap: 6px; }
+
+/* Preview image */
+.img-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.05); }
+
+/* Spinner */
+.spinner {
+  width: 18px; height: 18px; border: 2px solid rgba(248,245,233,0.2);
+  border-top-color: var(--cream); border-radius: 50%;
+  animation: spin 0.7s linear infinite; display: inline-block;
+}
+
+/* Limitation note */
+.limit-note {
+  font-size: 11px; color: rgba(248,245,233,0.3); line-height: 1.6;
+  padding: 10px 14px; background: rgba(248,245,233,0.03);
+  border: 1px solid rgba(248,245,233,0.07); border-radius: 8px; margin-top: 12px;
+}
+.limit-note strong { color: rgba(248,245,233,0.5); }
+
+/* ── FOOTER ── */
+footer {
+  position: relative; z-index: 1; text-align: center; padding: 22px 32px;
+  border-top: 1px solid rgba(248,245,233,0.07);
+  font-size: 11px; color: rgba(248,245,233,0.2); letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <span class="slm-color-logo">SLM</span>
+    <div class="header-title">
+      <span>Digital Toolkit</span>
+      <strong>Without 3rd Party Dependency</strong>
+    </div>
+  </div>
+
+</header>
+
+<!-- APP TABS -->
+<div class="app-tabs">
+  <button class="app-tab active" onclick="switchAppTab('qr', this)">
+    <span class="app-tab-icon">◼</span> QR Studio
+  </button>
+  <button class="app-tab" onclick="switchAppTab('files', this)">
+    <span class="app-tab-icon">⇄</span> Document &amp; File Transformation
+  </button>
+</div>
+
+<main>
+
+<!-- ════════════════════════════
+     TAB 1 — QR STUDIO
+════════════════════════════ -->
+<div class="tab-pane active" id="pane-qr">
+  <div class="page-heading">
+    <h1>Generate <em>any</em> QR code<br>in seconds</h1>
+    <p>URL, vCard, Wi-Fi, WhatsApp, email, location — scan and go</p>
+  </div>
+
+  <!-- Type selector -->
+  <div class="type-selector">
+    <button class="type-btn active" data-type="url" onclick="switchType('url',this)"><span class="type-icon">🔗</span>URL / Link</button>
+    <button class="type-btn" data-type="vcard" onclick="switchType('vcard',this)"><span class="type-icon">👤</span>vCard</button>
+    <button class="type-btn" data-type="wifi" onclick="switchType('wifi',this)"><span class="type-icon">📶</span>Wi-Fi</button>
+    <button class="type-btn whatsapp" data-type="whatsapp" onclick="switchType('whatsapp',this)"><span class="type-icon">💬</span>WhatsApp</button>
+    <button class="type-btn" data-type="email" onclick="switchType('email',this)"><span class="type-icon">✉️</span>Email</button>
+    <button class="type-btn" data-type="phone" onclick="switchType('phone',this)"><span class="type-icon">📞</span>Phone</button>
+    <button class="type-btn" data-type="location" onclick="switchType('location',this)"><span class="type-icon">📍</span>Location</button>
+    <button class="type-btn" data-type="text" onclick="switchType('text',this)"><span class="type-icon">📝</span>Plain Text</button>
+  </div>
+
+
+
+  <!-- Input Panel -->
+  <div class="panel">
+    <!-- URL -->
+    <div class="field-group active" id="fields-url">
+      <div class="field"><label>URL / Website Link</label><input type="url" id="url-link" placeholder="https://example.com" /></div>
+    </div>
+    <!-- vCard -->
+    <div class="field-group" id="fields-vcard">
+      <div class="field-row">
+        <div class="field"><label>First Name</label><input id="vc-first" placeholder="John" /></div>
+        <div class="field"><label>Last Name</label><input id="vc-last" placeholder="Doe" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Job Title</label><input id="vc-title" placeholder="Manager" /></div>
+        <div class="field"><label>Organization</label><input id="vc-org" placeholder="Google" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Phone (Work)</label><input id="vc-phone" placeholder="+62 21 5555 0100" /></div>
+        <div class="field"><label>Mobile</label><input id="vc-mobile" placeholder="+62 812 000 0000" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Email</label><input id="vc-email" placeholder="john.doe@google.com" /></div>
+        <div class="field"><label>Website</label><input id="vc-url" placeholder="https://www.google.com" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Address</label><input id="vc-address" placeholder="Jl. Jend. Sudirman, Jakarta" /></div>
+        <div class="field"><label>City</label><input id="vc-city" placeholder="Jakarta" /></div>
+      </div>
+    </div>
+    <!-- Wi-Fi -->
+    <div class="field-group" id="fields-wifi">
+      <div class="field-row">
+        <div class="field"><label>Network Name (SSID)</label><input id="wifi-ssid" placeholder="Public" /></div>
+        <div class="field"><label>Password</label><input id="wifi-pass" type="password" placeholder="••••••••" /></div>
+      </div>
+      <div class="field"><label>Security Type</label>
+        <select id="wifi-type">
+          <option value="WPA">WPA / WPA2 / WPA3</option>
+          <option value="WEP">WEP</option>
+          <option value="nopass">None (Open)</option>
+        </select>
+      </div>
+    </div>
+    <!-- WhatsApp -->
+    <div class="field-group" id="fields-whatsapp">
+      <div class="field">
+        <label>WhatsApp Number (with country code)</label>
+        <input id="wa-phone" placeholder="+62 812 000 0000" />
+      </div>
+      <div class="field">
+        <label>Pre-filled Message (optional)</label>
+        <textarea id="wa-msg" placeholder="Hi, I need IT support..."></textarea>
+      </div>
+      <div class="limit-note">The QR will open WhatsApp with this number and pre-filled message. Works on both mobile and web (wa.me).</div>
+    </div>
+    <!-- Email -->
+    <div class="field-group" id="fields-email">
+      <div class="field"><label>To (Email Address)</label><input id="email-to" placeholder="support@google.com" /></div>
+      <div class="field"><label>Subject</label><input id="email-subject" placeholder="Subject line" /></div>
+      <div class="field"><label>Body (optional)</label><textarea id="email-body" placeholder="Message body..."></textarea></div>
+    </div>
+    <!-- Phone -->
+    <div class="field-group" id="fields-phone">
+      <div class="field"><label>Phone Number</label><input id="phone-num" placeholder="+62 21 5555 0100" /></div>
+    </div>
+    <!-- Location -->
+    <div class="field-group" id="fields-location">
+      <div class="field-row">
+        <div class="field"><label>Latitude</label><input id="loc-lat" placeholder="-6.2088" /></div>
+        <div class="field"><label>Longitude</label><input id="loc-lon" placeholder="106.8456" /></div>
+      </div>
+      <div class="field"><label>Label (optional)</label><input id="loc-label" placeholder="Google Headquarter" /></div>
+    </div>
+    <!-- Plain Text -->
+    <div class="field-group" id="fields-text">
+      <div class="field"><label>Plain Text</label><textarea id="plain-text" placeholder="Enter any text content..." style="min-height:100px"></textarea></div>
+    </div>
+  </div>
+
+  <!-- QR Options -->
+  <div class="options-row">
+    <div class="option-field"><label>QR Size</label>
+      <select id="qr-size">
+        <option value="128">Small (128px)</option>
+        <option value="200" selected>Medium (200px)</option>
+        <option value="300">Large (300px)</option>
+        <option value="400">XL (400px)</option>
+      </select>
+    </div>
+    <div class="option-field"><label>Dark Color</label><input type="color" id="qr-dark" value="#07181E" /></div>
+    <div class="option-field"><label>Light Color</label><input type="color" id="qr-light" value="#FFFFFF" /></div>
+  </div>
+
+  <div class="error-msg" id="qr-error"></div>
+
+  <button class="btn btn-primary btn-full" onclick="generateQR()">◼ Generate QR Code</button>
+
+  <!-- QR Output -->
+  <div class="qr-output" id="qr-output">
+    <div class="qr-card">
+      <div class="qr-visual">
+        <div id="qr-container"></div>
+        <div class="qr-actions">
+          <button class="btn btn-blue" onclick="downloadQR()">Download PNG</button>
+          <button class="btn btn-secondary" onclick="copyQRData()">Copy Data</button>
+          <button class="btn btn-secondary" onclick="resetQR()">Reset</button>
+        </div>
+      </div>
+      <div class="qr-meta">
+        <h3 id="qr-title">QR Code Ready</h3>
+        <div class="qr-type-badge" id="qr-badge">URL</div>
+        <div class="qr-data-preview" id="qr-preview"></div>
+        <div class="qr-stats">
+          <div class="stat"><span class="stat-label">Characters</span><span class="stat-value" id="stat-chars">—</span></div>
+          <div class="stat"><span class="stat-label">Size</span><span class="stat-value" id="stat-size">—</span></div>
+          <div class="stat"><span class="stat-label">Type</span><span class="stat-value" id="stat-type">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /pane-qr -->
+
+
+<!-- ════════════════════════════
+     TAB 2 — FILE TRANSFORMATION
+════════════════════════════ -->
+<div class="tab-pane" id="pane-files">
+  <div class="page-heading">
+    <h1>Document &amp; File<br><em>Transformation</em></h1>
+    <p>Convert between formats · Compress images, PDFs &amp; documents — all in-browser, no upload needed</p>
+  </div>
+
+  <!-- Sub-tabs -->
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSubTab('convert', this)">⇄ &nbsp;Converter</button>
+    <button class="sub-tab" onclick="switchSubTab('compress', this)">⬇ &nbsp;Compressor</button>
+  </div>
+
+  <!-- ── CONVERTER ── -->
+  <div class="sub-pane active" id="sub-convert">
+
+    <!-- Category grid -->
+    <div style="margin-bottom:20px">
+      <label style="display:block;margin-bottom:12px">Select Conversion Category</label>
+      <div class="converter-grid" id="conv-grid">
+        <div class="conv-card active" data-cat="image" onclick="selectConvCat('image',this)">
+          <span class="conv-icon">🖼️</span>
+          <span class="conv-label">Image</span>
+          <span class="conv-arrow">JPG · PNG · WEBP · HEIC · BMP · ICO · TIFF · SVG</span>
+        </div>
+        <div class="conv-card" data-cat="document" onclick="selectConvCat('document',this)">
+          <span class="conv-icon">📄</span>
+          <span class="conv-label">Document</span>
+          <span class="conv-arrow">DOCX · TXT · HTML · MD</span>
+        </div>
+        <div class="conv-card" data-cat="data" onclick="selectConvCat('data',this)">
+          <span class="conv-icon">📊</span>
+          <span class="conv-label">Data / Spreadsheet</span>
+          <span class="conv-arrow">CSV · JSON · TSV · XLSX</span>
+        </div>
+        <div class="conv-card" data-cat="img2pdf" onclick="selectConvCat('img2pdf',this)">
+          <span class="conv-icon">📑</span>
+          <span class="conv-label">Images → PDF</span>
+          <span class="conv-arrow">JPG · PNG · WEBP · BMP → single PDF</span>
+        </div>
+        <div class="conv-card" data-cat="encode" onclick="selectConvCat('encode',this)">
+          <span class="conv-icon">🔐</span>
+          <span class="conv-label">Encode / Decode</span>
+          <span class="conv-arrow">Base64 · URL · HTML entities</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Format selector -->
+    <div class="panel" id="conv-panel">
+      <div class="format-row" id="conv-format-row">
+        <label>From</label>
+        <select id="conv-from"></select>
+        <span class="format-arrow">→</span>
+        <label>To</label>
+        <select id="conv-to"></select>
+      </div>
+
+      <!-- Encode/Decode special -->
+      <div id="encode-panel" style="display:none">
+        <div class="field-row">
+          <div class="field">
+            <label>Operation</label>
+            <select id="encode-op">
+              <option value="b64enc">Base64 Encode</option>
+              <option value="b64dec">Base64 Decode</option>
+              <option value="urlenc">URL Encode</option>
+              <option value="urldec">URL Decode</option>
+              <option value="htmlenc">HTML Entities Encode</option>
+              <option value="htmldec">HTML Entities Decode</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Input Text</label><textarea id="encode-input" placeholder="Paste text here..." style="min-height:80px"></textarea></div>
+        <div class="field"><label>Output</label><textarea id="encode-output" placeholder="Result will appear here..." style="min-height:80px" readonly></textarea></div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="btn btn-primary" onclick="runEncode()">Convert</button>
+          <button class="btn btn-secondary" onclick="copyEncodeOutput()">Copy Output</button>
+        </div>
+      </div>
+
+      <!-- Images → PDF special -->
+      <div id="img2pdf-panel" style="display:none">
+        <div class="field-row" style="margin-bottom:16px">
+          <div class="option-field">
+            <label>Page Size</label>
+            <select id="pdf-pagesize">
+              <option value="a4">A4 (210 × 297mm)</option>
+              <option value="letter">US Letter (216 × 279mm)</option>
+              <option value="a3">A3 (297 × 420mm)</option>
+              <option value="fit">Fit to Image</option>
+            </select>
+          </div>
+          <div class="option-field">
+            <label>Image Fit</label>
+            <select id="pdf-imgfit">
+              <option value="contain">Contain (keep ratio)</option>
+              <option value="fill">Fill page (may crop)</option>
+              <option value="original">Original size (may overflow)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row" style="margin-bottom:16px">
+          <div class="option-field">
+            <label>Orientation</label>
+            <select id="pdf-orientation">
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+              <option value="auto">Auto (per image)</option>
+            </select>
+          </div>
+          <div class="option-field">
+            <label>Output Filename</label>
+            <input id="pdf-filename" placeholder="merged-images.pdf" />
+          </div>
+        </div>
+        <div class="limit-note" style="margin-bottom:16px">Drop images below — <strong>order matters</strong>, drag to reorder. All images will be merged into one PDF file, one image per page.</div>
+      </div>
+
+      <!-- File drop for conversion -->
+      <div id="conv-file-area">
+        <div class="drop-zone" id="conv-drop" onclick="document.getElementById('conv-file-input').click()" ondragover="dz_over(event,'conv-drop')" ondragleave="dz_leave('conv-drop')" ondrop="dz_drop(event,'conv')">
+          <input type="file" id="conv-file-input" multiple onchange="addConvFiles(this.files)" />
+          <div class="drop-icon">📂</div>
+          <div class="drop-title">Drop files here or click to browse</div>
+          <div class="drop-sub">Multiple files supported</div>
+          <div class="drop-formats" id="conv-format-hint">Accepted: JPG, PNG, WEBP, HEIC, BMP, TIFF, ICO, GIF, SVG</div>
+        </div>
+        <div class="file-queue" id="conv-queue"></div>
+        <div class="error-msg" id="conv-error"></div>
+        <button class="btn btn-primary btn-full" id="conv-go-btn" onclick="runConversions()" style="display:none">⇄ &nbsp;Convert All Files</button>
+      </div>
+    </div>
+
+    <div class="result-area" id="conv-results">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="font-size:16px;letter-spacing:-0.02em;font-weight:400">Converted Files</h3>
+        <button class="btn btn-secondary" onclick="clearConvResults()">Clear</button>
+      </div>
+      <div class="result-grid" id="conv-result-grid"></div>
+    </div>
+
+    <div class="limit-note">
+      <strong>Browser-native conversions.</strong> Image formats converted via Canvas API. <strong>Images → PDF</strong> merges multiple images into a single PDF, one per page, with configurable page size, orientation and fit — no library required. Document conversions (DOCX↔TXT, DOCX↔HTML, MD↔HTML) parsed in-browser. CSV↔JSON↔TSV handled natively. No files leave your device.
+    </div>
+  </div><!-- /sub-convert -->
+
+  <!-- ── COMPRESSOR ── -->
+  <div class="sub-pane" id="sub-compress">
+    <div class="panel">
+      <div class="drop-zone" id="comp-drop" onclick="document.getElementById('comp-file-input').click()" ondragover="dz_over(event,'comp-drop')" ondragleave="dz_leave('comp-drop')" ondrop="dz_drop(event,'comp')">
+        <input type="file" id="comp-file-input" multiple accept="image/*,.pdf,.docx,.txt" onchange="addCompFiles(this.files)" />
+        <div class="drop-icon">🗜️</div>
+        <div class="drop-title">Drop images, PDFs or documents to compress</div>
+        <div class="drop-sub">JPG · PNG · WEBP · GIF · PDF · DOCX · TXT</div>
+        <div class="drop-formats">Multiple files OK — processed entirely in-browser</div>
+      </div>
+      <div class="file-queue" id="comp-queue"></div>
+
+      <div class="compress-opts" id="comp-opts" style="display:none">
+        <div class="range-field">
+          <label>Image Quality</label>
+          <div class="range-row">
+            <input type="range" id="comp-quality" min="10" max="100" value="75" oninput="document.getElementById('comp-q-val').textContent=this.value+'%'" />
+            <span class="range-val" id="comp-q-val">75%</span>
+          </div>
+        </div>
+        <div class="range-field">
+          <label>Max Dimension (px)</label>
+          <div class="range-row">
+            <input type="range" id="comp-maxdim" min="200" max="4000" step="100" value="1920" oninput="document.getElementById('comp-dim-val').textContent=this.value+'px'" />
+            <span class="range-val" id="comp-dim-val">1920px</span>
+          </div>
+        </div>
+        <div class="option-field">
+          <label>Output Format</label>
+          <select id="comp-format">
+            <option value="same">Keep Original Format</option>
+            <option value="jpeg">Convert to JPG</option>
+            <option value="webp">Convert to WEBP</option>
+            <option value="png">Convert to PNG</option>
+          </select>
+        </div>
+        <div class="option-field">
+          <label>PDF / Doc Compression</label>
+          <select id="comp-doc-mode">
+            <option value="strip">Strip whitespace &amp; metadata</option>
+            <option value="minify">Minify (aggressive)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="error-msg" id="comp-error"></div>
+      <button class="btn btn-primary btn-full" id="comp-go-btn" onclick="runCompression()" style="display:none">⬇ &nbsp;Compress All Files</button>
+    </div>
+
+    <div class="result-area" id="comp-results">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="font-size:16px;letter-spacing:-0.02em;font-weight:400">Compressed Files</h3>
+        <button class="btn btn-secondary" onclick="clearCompResults()">Clear</button>
+      </div>
+      <div class="result-grid" id="comp-result-grid"></div>
+    </div>
+
+    <div class="limit-note">
+      <strong>Images</strong> are re-encoded via Canvas (quality slider + max dimension resize). <strong>WEBP</strong> output typically achieves 30–60% savings vs JPG. <strong>PDF/DOCX/TXT</strong> compression strips metadata and normalizes whitespace; deep PDF compression requires a server — the browser-only savings are moderate. All processing is 100% local.
+    </div>
+  </div><!-- /sub-compress -->
+
+</div><!-- /pane-files -->
+
+</main>
+
+<footer>Digital Tools &nbsp;·&nbsp; &copy; 2026 SecondlifeMotion</footer>
+
+<script>
+/* ════════════════════════════════════
+   APP TAB SWITCHING
+════════════════════════════════════ */
+function switchAppTab(id, btn) {
+  document.querySelectorAll('.app-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + id).classList.add('active');
+}
+
+/* ════════════════════════════════════
+   QR STUDIO
+════════════════════════════════════ */
+let currentType = 'url';
+let currentQRData = '';
+
+function switchType(type, btn) {
+  currentType = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.field-group').forEach(g => g.classList.remove('active'));
+  document.getElementById('fields-' + type).classList.add('active');
+  hideEl('qr-error'); hideEl('qr-output', true);
+}
+
+function buildQRData() {
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  switch (currentType) {
+    case 'url': {
+      if (!v('url-link')) throw new Error('Please enter a URL.');
+      return v('url-link');
+    }
+    case 'vcard': {
+      const fn = (v('vc-first') + ' ' + v('vc-last')).trim();
+      if (!fn) throw new Error('Please enter at least a name.');
+      let c = 'BEGIN:VCARD\nVERSION:3.0\n';
+      c += `FN:${fn}\nN:${v('vc-last')};${v('vc-first')};;;\n`;
+      if (v('vc-title')) c += `TITLE:${v('vc-title')}\n`;
+      if (v('vc-org')) c += `ORG:${v('vc-org')}\n`;
+      if (v('vc-phone')) c += `TEL;TYPE=WORK,VOICE:${v('vc-phone')}\n`;
+      if (v('vc-mobile')) c += `TEL;TYPE=CELL:${v('vc-mobile')}\n`;
+      if (v('vc-email')) c += `EMAIL;TYPE=WORK:${v('vc-email')}\n`;
+      if (v('vc-url')) c += `URL:${v('vc-url')}\n`;
+      if (v('vc-address') || v('vc-city')) c += `ADR;TYPE=WORK:;;${v('vc-address')};;${v('vc-city')};;;\n`;
+      c += 'END:VCARD';
+      return c;
+    }
+    case 'wifi': {
+      if (!v('wifi-ssid')) throw new Error('Please enter a network name.');
+      return `WIFI:T:${v('wifi-type')};S:${v('wifi-ssid')};P:${document.getElementById('wifi-pass').value};;`;
+    }
+    case 'whatsapp': {
+      const phone = v('wa-phone').replace(/[\s\-\(\)]/g, '').replace(/^\+/, '');
+      if (!phone) throw new Error('Please enter a WhatsApp number.');
+      const msg = encodeURIComponent(v('wa-msg') || '');
+      return msg ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/${phone}`;
+    }
+    case 'email': {
+      if (!v('email-to')) throw new Error('Please enter an email address.');
+      return `mailto:${v('email-to')}?subject=${encodeURIComponent(v('email-subject'))}&body=${encodeURIComponent(v('email-body'))}`;
+    }
+    case 'phone': {
+      if (!v('phone-num')) throw new Error('Please enter a phone number.');
+      return `tel:${v('phone-num')}`;
+    }
+    case 'location': {
+      if (!v('loc-lat') || !v('loc-lon')) throw new Error('Please enter latitude and longitude.');
+      const label = v('loc-label');
+      return label ? `geo:${v('loc-lat')},${v('loc-lon')}?q=${encodeURIComponent(label)}` : `geo:${v('loc-lat')},${v('loc-lon')}`;
+    }
+    case 'text': {
+      if (!v('plain-text')) throw new Error('Please enter some text.');
+      return v('plain-text');
+    }
+  }
+}
+
+function generateQR() {
+  hideEl('qr-error'); hideEl('qr-output', true);
+  let data;
+  try { data = buildQRData(); } catch(e) { showErr('qr-error', e.message); return; }
+  currentQRData = data;
+
+  const size = +document.getElementById('qr-size').value;
+  const dark = document.getElementById('qr-dark').value;
+  const light = document.getElementById('qr-light').value;
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '';
+
+  try {
+    new QRCode(container, { text: data, width: size, height: size, colorDark: dark, colorLight: light, correctLevel: QRCode.CorrectLevel.M });
+  } catch(e) {
+    showErr('qr-error', 'Content too long for a QR code. Try reducing the data.');
+    return;
+  }
+
+  const labels = { url:'URL', vcard:'vCard', wifi:'Wi-Fi', whatsapp:'WhatsApp', email:'Email', phone:'Phone', location:'Location', text:'Text' };
+  const titles = { url:'Website Link', vcard:'Contact Card', wifi:'Wi-Fi Network', whatsapp:'WhatsApp Chat', email:'Email Compose', phone:'Phone Number', location:'Geo Location', text:'Plain Text' };
+
+  document.getElementById('qr-title').textContent = titles[currentType];
+  document.getElementById('qr-badge').textContent = labels[currentType];
+  document.getElementById('qr-preview').textContent = data;
+  document.getElementById('stat-chars').textContent = data.length;
+  document.getElementById('stat-size').textContent = size + ' × ' + size + 'px';
+  document.getElementById('stat-type').textContent = labels[currentType];
+
+  const out = document.getElementById('qr-output');
+  out.classList.add('visible');
+  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qr-container canvas');
+  const img = document.querySelector('#qr-container img');
+  const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : null);
+  if (!src) return;
+  const a = document.createElement('a');
+  a.download = `qr-${currentType}-${Date.now()}.png`;
+  a.href = src; a.click();
+}
+function copyQRData() {
+  if (!currentQRData) return;
+  navigator.clipboard.writeText(currentQRData).then(() => {
+    const btn = document.querySelector('.qr-actions .btn-secondary');
+    const o = btn.textContent; btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = o, 1500);
+  });
+}
+function resetQR() { document.getElementById('qr-output').classList.remove('visible'); }
+
+
+
+/* ════════════════════════════════════
+   FILE TRANSFORMATION — SHARED
+════════════════════════════════════ */
+function dz_over(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
+function dz_leave(id) { document.getElementById(id).classList.remove('drag-over'); }
+function dz_drop(e, tab) {
+  e.preventDefault();
+  dz_leave(tab === 'conv' ? 'conv-drop' : 'comp-drop');
+  const files = e.dataTransfer.files;
+  if (tab === 'conv') addConvFiles(files);
+  else addCompFiles(files);
+}
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+  return (b/(1024*1024)).toFixed(2) + ' MB';
+}
+function ext(name) { return name.split('.').pop().toLowerCase(); }
+function mime2ext(mime) {
+  const m = { 'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/bmp':'bmp','image/tiff':'tiff','image/svg+xml':'svg','image/x-icon':'ico','image/heic':'heic','audio/mpeg':'mp3','audio/wav':'wav','audio/ogg':'ogg','video/mp4':'mp4' };
+  return m[mime] || mime.split('/')[1] || 'bin';
+}
+function fileIcon(name) {
+  const e = ext(name);
+  if (['jpg','jpeg','png','webp','gif','bmp','tiff','ico','heic','svg'].includes(e)) return '🖼️';
+  if (['mp3','wav','ogg','flac','aac'].includes(e)) return '🎵';
+  if (['mp4','webm','mov','avi'].includes(e)) return '🎬';
+  if (['pdf'].includes(e)) return '📕';
+  if (['docx','doc'].includes(e)) return '📘';
+  if (['xlsx','xls'].includes(e)) return '📗';
+  if (['csv','tsv'].includes(e)) return '📊';
+  if (['json'].includes(e)) return '🔧';
+  if (['html','htm'].includes(e)) return '🌐';
+  if (['md'].includes(e)) return '📝';
+  if (['txt'].includes(e)) return '📄';
+  return '📎';
+}
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
+function hideEl(id, removeVisible) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (removeVisible) el.classList.remove('visible');
+  else el.classList.remove('visible');
+}
+
+/* ════════════════════════════════════
+   CONVERTER
+════════════════════════════════════ */
+const CONV_FORMATS = {
+  image: { from: ['jpg','jpeg','png','webp','gif','bmp','tiff','ico','heic','svg'], to: ['jpg','png','webp','gif','bmp','ico'] },
+  document: { from: ['docx','txt','html','htm','md'], to: ['txt','html','md','docx'] },
+  data: { from: ['csv','json','tsv','xlsx'], to: ['csv','json','tsv'] },
+  img2pdf: { from: ['jpg','jpeg','png','webp','bmp','gif'], to: ['pdf'] },
+  encode: { from: [], to: [] }
+};
+
+let convCat = 'image';
+let convFiles = [];
+
+function switchSubTab(id, btn) {
+  document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sub-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sub-' + id).classList.add('active');
+}
+
+function selectConvCat(cat, card) {
+  convCat = cat;
+  document.querySelectorAll('.conv-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  convFiles = [];
+  document.getElementById('conv-queue').innerHTML = '';
+  document.getElementById('conv-go-btn').style.display = 'none';
+  document.getElementById('conv-results').classList.remove('visible');
+
+  // hide all special panels first
+  document.getElementById('encode-panel').style.display = 'none';
+  document.getElementById('img2pdf-panel').style.display = 'none';
+  document.getElementById('conv-file-area').style.display = 'block';
+  document.getElementById('conv-format-row').style.display = 'flex';
+
+  if (cat === 'encode') {
+    document.getElementById('encode-panel').style.display = 'block';
+    document.getElementById('conv-file-area').style.display = 'none';
+    document.getElementById('conv-format-row').style.display = 'none';
+  } else if (cat === 'img2pdf') {
+    document.getElementById('img2pdf-panel').style.display = 'block';
+    document.getElementById('conv-format-row').style.display = 'none';
+    document.getElementById('conv-format-hint').textContent = 'Accepted: JPG, PNG, WEBP, BMP, GIF';
+    document.getElementById('conv-go-btn').innerHTML = '📑 &nbsp;Merge All Images into PDF';
+  } else {
+    populateFormats(cat);
+    document.getElementById('conv-go-btn').innerHTML = '⇄ &nbsp;Convert All Files';
+  }
+}
+
+function populateFormats(cat) {
+  const cfg = CONV_FORMATS[cat];
+  const from = document.getElementById('conv-from');
+  const to = document.getElementById('conv-to');
+  from.innerHTML = cfg.from.map(f => `<option value="${f}">${f.toUpperCase()}</option>`).join('');
+  to.innerHTML = cfg.to.map(f => `<option value="${f}">${f.toUpperCase()}</option>`).join('');
+  // default to best conversion
+  if (cat === 'image') to.value = 'webp';
+  document.getElementById('conv-format-hint').textContent = 'Accepted: ' + cfg.from.map(f=>f.toUpperCase()).join(', ');
+}
+
+populateFormats('image'); // init
+
+function addConvFiles(files) {
+  Array.from(files).forEach(f => {
+    convFiles.push({ file: f, id: Date.now() + Math.random() });
+    renderConvQueue();
+  });
+  if (convFiles.length > 0) document.getElementById('conv-go-btn').style.display = 'flex';
+}
+
+function renderConvQueue() {
+  const q = document.getElementById('conv-queue');
+  q.innerHTML = convFiles.map((f,i) => `
+    <div class="file-item" id="conv-fi-${i}">
+      <span class="file-item-icon">${fileIcon(f.file.name)}</span>
+      <div class="file-item-info">
+        <div class="file-item-name">${f.file.name}</div>
+        <div class="file-item-size">${fmtBytes(f.file.size)}</div>
+      </div>
+      <span class="file-item-status status-ready" id="conv-st-${i}">Ready</span>
+      <button class="file-item-remove" onclick="removeConvFile(${i})">✕</button>
+    </div>`).join('');
+}
+function removeConvFile(i) {
+  convFiles.splice(i, 1);
+  renderConvQueue();
+  if (convFiles.length === 0) document.getElementById('conv-go-btn').style.display = 'none';
+}
+
+async function runConversions() {
+  const btn = document.getElementById('conv-go-btn');
+
+  // ── Images → PDF (batch merge) ──
+  if (convCat === 'img2pdf') {
+    if (convFiles.length === 0) { showErr('conv-error', 'Please add at least one image.'); return; }
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Building PDF…';
+    document.getElementById('conv-results').classList.remove('visible');
+    document.getElementById('conv-result-grid').innerHTML = '';
+    convFiles.forEach((_,i) => {
+      const st = document.getElementById('conv-st-' + i);
+      if (st) { st.textContent = 'Processing…'; st.className = 'file-item-status status-processing'; }
+    });
+    try {
+      const pageSize = document.getElementById('pdf-pagesize').value;
+      const imgFit = document.getElementById('pdf-imgfit').value;
+      const orient = document.getElementById('pdf-orientation').value;
+      const filename = (document.getElementById('pdf-filename').value.trim() || 'merged-images') + (document.getElementById('pdf-filename').value.includes('.pdf') ? '' : '.pdf');
+      const pdfBlob = await imagesToPdf(convFiles.map(f => f.file), { pageSize, imgFit, orient });
+      convFiles.forEach((_,i) => {
+        const st = document.getElementById('conv-st-' + i);
+        if (st) { st.textContent = 'Done ✓'; st.className = 'file-item-status status-done'; }
+      });
+      const totalSize = convFiles.reduce((a,f) => a + f.file.size, 0);
+      const grid = document.getElementById('conv-result-grid');
+      grid.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.innerHTML = `
+        <div class="result-item-header">
+          <span class="result-item-icon">📕</span>
+          <span class="result-item-name">${filename}</span>
+        </div>
+        <div class="result-meta">
+          <span class="result-size">${convFiles.length} image${convFiles.length>1?'s':''} · ${fmtBytes(pdfBlob.size)}</span>
+          <span class="result-saving saving-pos">${convFiles.length} pages</span>
+        </div>
+        <div class="result-actions">
+          <button class="btn btn-blue" onclick="this._dl()">Download PDF</button>
+        </div>`;
+      div.querySelector('.btn-blue')._dl = () => triggerDownload(pdfBlob, filename);
+      grid.appendChild(div);
+      document.getElementById('conv-results').classList.add('visible');
+    } catch(e) {
+      convFiles.forEach((_,i) => {
+        const st = document.getElementById('conv-st-' + i);
+        if (st) { st.textContent = 'Error'; st.className = 'file-item-status status-error'; }
+      });
+      showErr('conv-error', 'PDF generation failed: ' + e.message);
+    }
+    btn.disabled = false; btn.innerHTML = '📑 &nbsp;Merge All Images into PDF';
+    return;
+  }
+
+  // ── Standard per-file conversion ──
+  const toFmt = document.getElementById('conv-to').value;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Converting…';
+
+  const resultGrid = document.getElementById('conv-result-grid');
+  resultGrid.innerHTML = '';
+  document.getElementById('conv-results').classList.remove('visible');
+
+  for (let i = 0; i < convFiles.length; i++) {
+    const st = document.getElementById('conv-st-' + i);
+    st.textContent = 'Processing…'; st.className = 'file-item-status status-processing';
+    try {
+      const result = await convertFile(convFiles[i].file, toFmt);
+      st.textContent = 'Done ✓'; st.className = 'file-item-status status-done';
+      addConvResult(convFiles[i].file, result, toFmt, resultGrid);
+    } catch(e) {
+      st.textContent = 'Error'; st.className = 'file-item-status status-error';
+      addConvResult(convFiles[i].file, null, toFmt, resultGrid, e.message);
+    }
+  }
+
+  document.getElementById('conv-results').classList.add('visible');
+  btn.disabled = false; btn.innerHTML = '⇄ &nbsp;Convert All Files';
+}
+
+async function convertFile(file, toFmt) {
+  const srcExt = ext(file.name);
+  const isImage = ['jpg','jpeg','png','webp','gif','bmp','tiff','ico','heic','svg'].includes(srcExt);
+  const isData = ['csv','json','tsv'].includes(srcExt);
+  const isDoc = ['txt','html','htm','md','docx'].includes(srcExt);
+
+  if (isImage) return await convertImage(file, toFmt);
+  if (isData) return await convertData(file, toFmt);
+  if (isDoc) return await convertDoc(file, toFmt);
+  throw new Error('Unsupported conversion');
+}
+
+function convertImage(file, toFmt) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      if (file.name.toLowerCase().endsWith('.svg') && toFmt === 'svg') {
+        resolve({ blob: new Blob([e.target.result], {type:'image/svg+xml'}), ext: 'svg' });
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        const ctx = canvas.getContext('2d');
+        if (toFmt !== 'png' && toFmt !== 'webp') {
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(img, 0, 0);
+        const mimeMap = { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp', gif:'image/gif', bmp:'image/bmp', ico:'image/x-icon' };
+        const mime = mimeMap[toFmt] || 'image/png';
+        const quality = (toFmt === 'jpg' || toFmt === 'webp') ? 0.88 : undefined;
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('Canvas conversion failed')); return; }
+          resolve({ blob, ext: toFmt });
+        }, mime, quality);
+      };
+      img.onerror = () => reject(new Error('Could not load image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function convertData(file, toFmt) {
+  const text = await file.text();
+  const srcExt = ext(file.name);
+  let data, output;
+
+  if (srcExt === 'csv' || srcExt === 'tsv') {
+    const sep = srcExt === 'tsv' ? '\t' : ',';
+    const rows = text.trim().split('\n').map(r => r.split(sep).map(c => c.replace(/^"|"$/g,'')));
+    const headers = rows[0];
+    const records = rows.slice(1).map(r => Object.fromEntries(headers.map((h,i) => [h, r[i]||''])));
+    if (toFmt === 'json') output = JSON.stringify(records, null, 2);
+    else if (toFmt === 'tsv') output = [headers.join('\t'), ...records.map(r => headers.map(h=>r[h]).join('\t'))].join('\n');
+    else output = [headers.join(','), ...records.map(r => headers.map(h=>`"${(r[h]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  } else if (srcExt === 'json') {
+    const json = JSON.parse(text);
+    const arr = Array.isArray(json) ? json : [json];
+    const headers = [...new Set(arr.flatMap(r => Object.keys(r)))];
+    const sep = toFmt === 'tsv' ? '\t' : ',';
+    if (toFmt === 'csv' || toFmt === 'tsv') {
+      output = [headers.join(sep), ...arr.map(r => headers.map(h=>`"${String(r[h]||'').replace(/"/g,'""')}"`).join(sep))].join('\n');
+    } else output = text;
+  }
+
+  const mimeMap = { csv:'text/csv', json:'application/json', tsv:'text/tab-separated-values' };
+  return { blob: new Blob([output], { type: mimeMap[toFmt]||'text/plain' }), ext: toFmt };
+}
+
+async function convertDoc(file, toFmt) {
+  const text = await file.text();
+  const srcExt = ext(file.name);
+  let output, mime;
+
+  if (toFmt === 'txt') {
+    output = text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    mime = 'text/plain';
+  } else if (toFmt === 'html') {
+    if (srcExt === 'md') {
+      output = mdToHtml(text);
+    } else {
+      output = `<!DOCTYPE html><html><body><pre>${escHtml(text)}</pre></body></html>`;
+    }
+    mime = 'text/html';
+  } else if (toFmt === 'md') {
+    if (srcExt === 'html' || srcExt === 'htm') {
+      output = htmlToMd(text);
+    } else {
+      output = text;
+    }
+    mime = 'text/markdown';
+  } else if (toFmt === 'docx') {
+    // Simple RTF as DOCX placeholder (true DOCX needs a library)
+    output = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Converted from ${srcExt} -->\n<document>${escHtml(text)}</document>`;
+    mime = 'text/xml';
+    toFmt = 'xml';
+  } else {
+    output = text; mime = 'text/plain';
+  }
+  return { blob: new Blob([output], { type: mime }), ext: toFmt };
+}
+
+function mdToHtml(md) {
+  return md
+    .replace(/^### (.+)/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^\- (.+)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[h|u|l])/gm, '')
+    .trim();
+}
+function htmlToMd(html) {
+  return html
+    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n')
+    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n')
+    .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n')
+    .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+    .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+    .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<p[^>]*>/gi, '\n').replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ')
+    .trim();
+}
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── Images → PDF (pure JS, no library) ── */
+const PAGE_SIZES = {
+  a4:      { w: 595.28, h: 841.89 },
+  letter:  { w: 612,    h: 792    },
+  a3:      { w: 841.89, h: 1190.55},
+  fit:     null
+};
+
+function imagesToPdf(files, { pageSize = 'a4', imgFit = 'contain', orient = 'portrait' }) {
+  return new Promise((resolve, reject) => {
+    const promises = files.map(f => new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => res({ dataUrl: e.target.result, w: img.naturalWidth || img.width, h: img.naturalHeight || img.height });
+        img.onerror = () => rej(new Error('Could not load ' + f.name));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => rej(new Error('Could not read ' + f.name));
+      reader.readAsDataURL(f);
+    }));
+
+    Promise.all(promises).then(images => {
+      try {
+        // Build PDF manually
+        const objects = [];
+        const pageRefs = [];
+        let objId = 1;
+
+        const addObj = (content) => { objects.push({ id: objId++, content }); return objId - 1; };
+
+        // catalog + pages placeholder added later
+        const catalogId = objId++;
+        const pagesId   = objId++;
+
+        const imageObjs = [];
+        const pageObjs  = [];
+
+        images.forEach((img, idx) => {
+          // Determine page dimensions
+          let pgW, pgH;
+          if (pageSize === 'fit') {
+            pgW = img.w; pgH = img.h;
+          } else {
+            pgW = PAGE_SIZES[pageSize].w;
+            pgH = PAGE_SIZES[pageSize].h;
+          }
+
+          // Auto orient: rotate page to match image orientation
+          let finalW = pgW, finalH = pgH;
+          if (orient === 'landscape') { finalW = Math.max(pgW,pgH); finalH = Math.min(pgW,pgH); }
+          else if (orient === 'portrait') { finalW = Math.min(pgW,pgH); finalH = Math.max(pgW,pgH); }
+          else { // auto
+            if (img.w > img.h) { finalW = Math.max(pgW,pgH); finalH = Math.min(pgW,pgH); }
+            else { finalW = Math.min(pgW,pgH); finalH = Math.max(pgW,pgH); }
+          }
+
+          // Compute image placement
+          let drawW, drawH, drawX, drawY;
+          if (imgFit === 'contain') {
+            const scale = Math.min(finalW / img.w, finalH / img.h);
+            drawW = img.w * scale; drawH = img.h * scale;
+            drawX = (finalW - drawW) / 2; drawY = (finalH - drawH) / 2;
+          } else if (imgFit === 'fill') {
+            const scale = Math.max(finalW / img.w, finalH / img.h);
+            drawW = img.w * scale; drawH = img.h * scale;
+            drawX = (finalW - drawW) / 2; drawY = (finalH - drawH) / 2;
+          } else { // original
+            drawW = img.w; drawH = img.h; drawX = 0; drawY = 0;
+          }
+
+          // Re-encode image to JPEG via canvas for PDF embedding
+          const canvas = document.createElement('canvas');
+          canvas.width = img.w; canvas.height = img.h;
+          const ctx = canvas.getContext('2d');
+          const imgEl = new Image(); imgEl.src = img.dataUrl;
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, img.w, img.h);
+          ctx.drawImage(imgEl, 0, 0);
+          const jpegB64 = canvas.toDataURL('image/jpeg', 0.88).split(',')[1];
+          const jpegBytes = atob(jpegB64);
+          const byteArr = new Uint8Array(jpegBytes.length);
+          for (let i = 0; i < jpegBytes.length; i++) byteArr[i] = jpegBytes.charCodeAt(i);
+
+          const imgObjId = objId++;
+          const imgName  = `Im${idx}`;
+
+          imageObjs.push({ id: imgObjId, name: imgName, bytes: byteArr, w: img.w, h: img.h });
+
+          // Page content stream
+          // PDF y-axis: 0 at bottom. drawY from top → convert
+          const pdfDrawY = finalH - drawY - drawH;
+          const stream = `q ${drawW.toFixed(2)} 0 0 ${drawH.toFixed(2)} ${drawX.toFixed(2)} ${pdfDrawY.toFixed(2)} cm /${imgName} Do Q`;
+          const contentId = objId++;
+          const pageId    = objId++;
+
+          pageObjs.push({ id: pageId, contentId, imgObjId, imgName, finalW, finalH, stream });
+          pageRefs.push(pageId);
+        });
+
+        // --- Assemble PDF bytes ---
+        const enc = new TextEncoder();
+        const parts = [];
+        const push = s => parts.push(enc.encode(s));
+        const pushBytes = b => parts.push(b);
+
+        push('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+
+        const offsets = {};
+
+        // Catalog
+        offsets[catalogId] = totalLen(parts);
+        push(`${catalogId} 0 obj\n<< /Type /Catalog /Pages ${pagesId} 0 R >>\nendobj\n`);
+
+        // Image XObjects + content streams + pages
+        for (let i = 0; i < pageObjs.length; i++) {
+          const p = pageObjs[i];
+          const img2 = imageObjs[i];
+
+          // Image XObject
+          offsets[img2.id] = totalLen(parts);
+          push(`${img2.id} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${img2.w} /Height ${img2.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${img2.bytes.length} >>\nstream\n`);
+          pushBytes(img2.bytes);
+          push(`\nendstream\nendobj\n`);
+
+          // Content stream
+          const streamBytes = enc.encode(p.stream);
+          offsets[p.contentId] = totalLen(parts);
+          push(`${p.contentId} 0 obj\n<< /Length ${streamBytes.length} >>\nstream\n`);
+          pushBytes(streamBytes);
+          push(`\nendstream\nendobj\n`);
+
+          // Page object
+          offsets[p.id] = totalLen(parts);
+          push(`${p.id} 0 obj\n<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${p.finalW.toFixed(2)} ${p.finalH.toFixed(2)}] /Contents ${p.contentId} 0 R /Resources << /XObject << /${p.imgName} ${img2.id} 0 R >> >> >>\nendobj\n`);
+        }
+
+        // Pages object
+        offsets[pagesId] = totalLen(parts);
+        const kids = pageRefs.map(r => `${r} 0 R`).join(' ');
+        push(`${pagesId} 0 obj\n<< /Type /Pages /Kids [${kids}] /Count ${pageRefs.length} >>\nendobj\n`);
+
+        // Catalog
+        offsets[catalogId] = totalLen(parts);
+        push(`${catalogId} 0 obj\n<< /Type /Catalog /Pages ${pagesId} 0 R >>\nendobj\n`);
+
+        // xref
+        const xrefOffset = totalLen(parts);
+        const allIds = [catalogId, pagesId, ...imageObjs.map(i=>i.id), ...pageObjs.flatMap(p=>[p.contentId, p.id])];
+        // Simple cross-reference table
+        const maxId = Math.max(...allIds);
+        push(`xref\n0 ${maxId + 1}\n0000000000 65535 f \n`);
+        for (let id = 1; id <= maxId; id++) {
+          const off = offsets[id];
+          push(off !== undefined ? String(off).padStart(10,'0') + ' 00000 n \n' : '0000000000 65535 f \n');
+        }
+        push(`trailer\n<< /Size ${maxId + 1} /Root ${catalogId} 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`);
+
+        // Merge all parts
+        const total = totalLen(parts);
+        const result = new Uint8Array(total);
+        let pos = 0;
+        for (const p of parts) { result.set(p, pos); pos += p.length; }
+
+        resolve(new Blob([result], { type: 'application/pdf' }));
+      } catch(e) { reject(e); }
+    }).catch(reject);
+  });
+}
+
+function totalLen(parts) { return parts.reduce((a, p) => a + p.length, 0); }
+
+function addConvResult(origFile, result, toFmt, grid, errMsg) {
+  const baseName = origFile.name.replace(/\.[^.]+$/, '');
+  const newName = errMsg ? origFile.name : `${baseName}.${result.ext}`;
+  const newSize = result ? result.blob.size : 0;
+  const saving = result ? Math.round((1 - newSize / origFile.size) * 100) : 0;
+
+  const div = document.createElement('div');
+  div.className = 'result-item';
+  if (!errMsg) {
+    const isImg = ['jpg','jpeg','png','webp','gif','bmp','tiff','ico'].includes(result.ext);
+    const previewUrl = isImg ? URL.createObjectURL(result.blob) : null;
+    div.innerHTML = `
+      ${previewUrl ? `<img class="img-preview" src="${previewUrl}" />` : ''}
+      <div class="result-item-header">
+        <span class="result-item-icon">${fileIcon(newName)}</span>
+        <span class="result-item-name">${newName}</span>
+      </div>
+      <div class="result-meta">
+        <span class="result-size">${fmtBytes(origFile.size)} → ${fmtBytes(newSize)}</span>
+        <span class="result-saving ${saving > 0 ? 'saving-pos' : 'saving-neg'}">${saving > 0 ? '−'+saving+'%' : '+'+Math.abs(saving)+'%'}</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-blue" onclick="this._dl()">Download</button>
+      </div>`;
+    div.querySelector('.btn-blue')._dl = () => triggerDownload(result.blob, newName);
+  } else {
+    div.innerHTML = `<div class="result-item-header"><span class="result-item-icon">⚠️</span><span class="result-item-name">${origFile.name}</span></div><div style="font-size:12px;color:#ff8a8f;margin-top:6px">${errMsg}</div>`;
+  }
+  grid.appendChild(div);
+}
+function clearConvResults() {
+  document.getElementById('conv-result-grid').innerHTML = '';
+  document.getElementById('conv-results').classList.remove('visible');
+}
+
+// Encode/Decode
+function runEncode() {
+  const op = document.getElementById('encode-op').value;
+  const input = document.getElementById('encode-input').value;
+  let out = '';
+  try {
+    if (op === 'b64enc') out = btoa(unescape(encodeURIComponent(input)));
+    else if (op === 'b64dec') out = decodeURIComponent(escape(atob(input.trim())));
+    else if (op === 'urlenc') out = encodeURIComponent(input);
+    else if (op === 'urldec') out = decodeURIComponent(input);
+    else if (op === 'htmlenc') out = input.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    else if (op === 'htmldec') out = input.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#039;/g,"'");
+  } catch(e) { out = 'Error: ' + e.message; }
+  document.getElementById('encode-output').value = out;
+}
+function copyEncodeOutput() {
+  const out = document.getElementById('encode-output').value;
+  if (!out) return;
+  navigator.clipboard.writeText(out).then(() => {
+    const btn = document.querySelector('#encode-panel .btn-secondary');
+    const o = btn.textContent; btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = o, 1500);
+  });
+}
+
+/* ════════════════════════════════════
+   COMPRESSOR
+════════════════════════════════════ */
+let compFiles = [];
+
+function addCompFiles(files) {
+  Array.from(files).forEach(f => { compFiles.push(f); });
+  renderCompQueue();
+  if (compFiles.length > 0) {
+    document.getElementById('comp-opts').style.display = 'grid';
+    document.getElementById('comp-go-btn').style.display = 'flex';
+  }
+}
+function renderCompQueue() {
+  const q = document.getElementById('comp-queue');
+  q.innerHTML = compFiles.map((f,i) => `
+    <div class="file-item" id="comp-fi-${i}">
+      <span class="file-item-icon">${fileIcon(f.name)}</span>
+      <div class="file-item-info">
+        <div class="file-item-name">${f.name}</div>
+        <div class="file-item-size">${fmtBytes(f.size)}</div>
+      </div>
+      <span class="file-item-status status-ready" id="comp-st-${i}">Ready</span>
+      <button class="file-item-remove" onclick="removeCompFile(${i})">✕</button>
+    </div>`).join('');
+}
+function removeCompFile(i) {
+  compFiles.splice(i, 1);
+  renderCompQueue();
+  if (compFiles.length === 0) {
+    document.getElementById('comp-opts').style.display = 'none';
+    document.getElementById('comp-go-btn').style.display = 'none';
+  }
+}
+
+async function runCompression() {
+  const quality = +document.getElementById('comp-quality').value / 100;
+  const maxDim = +document.getElementById('comp-maxdim').value;
+  const outFmt = document.getElementById('comp-format').value;
+  const docMode = document.getElementById('comp-doc-mode').value;
+  const btn = document.getElementById('comp-go-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Compressing…';
+
+  const resultGrid = document.getElementById('comp-result-grid');
+  resultGrid.innerHTML = '';
+  document.getElementById('comp-results').classList.remove('visible');
+
+  for (let i = 0; i < compFiles.length; i++) {
+    const f = compFiles[i];
+    const st = document.getElementById('comp-st-' + i);
+    st.textContent = 'Compressing…'; st.className = 'file-item-status status-processing';
+    try {
+      const result = await compressFile(f, quality, maxDim, outFmt, docMode);
+      st.textContent = 'Done ✓'; st.className = 'file-item-status status-done';
+      addCompResult(f, result, resultGrid);
+    } catch(e) {
+      st.textContent = 'Error'; st.className = 'file-item-status status-error';
+      addCompResult(f, null, resultGrid, e.message);
+    }
+  }
+  document.getElementById('comp-results').classList.add('visible');
+  btn.disabled = false; btn.innerHTML = '⬇ &nbsp;Compress All Files';
+}
+
+function compressFile(file, quality, maxDim, outFmt, docMode) {
+  const srcExt = ext(file.name);
+  const isImage = ['jpg','jpeg','png','webp','gif','bmp','tiff','ico','heic'].includes(srcExt);
+  if (isImage) return compressImage(file, quality, maxDim, outFmt);
+  return compressDoc(file, docMode);
+}
+
+function compressImage(file, quality, maxDim, outFmt) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.naturalWidth || img.width;
+        let h = img.naturalHeight || img.height;
+        if (w > maxDim || h > maxDim) {
+          const ratio = Math.min(maxDim/w, maxDim/h);
+          w = Math.round(w * ratio); h = Math.round(h * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        const srcExt2 = ext(file.name);
+        const fmt = outFmt === 'same' ? srcExt2 : outFmt;
+        if (fmt !== 'png' && fmt !== 'webp') { ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); }
+        ctx.drawImage(img, 0, 0, w, h);
+        const mimeMap = { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp', gif:'image/gif', bmp:'image/bmp', same:'image/jpeg' };
+        const mime = mimeMap[fmt] || 'image/jpeg';
+        const q = (mime === 'image/png') ? undefined : quality;
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('Compression failed')); return; }
+          const newExt = outFmt === 'same' ? srcExt2 : outFmt;
+          resolve({ blob, ext: newExt });
+        }, mime, q);
+      };
+      img.onerror = () => reject(new Error('Could not load image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function compressDoc(file, mode) {
+  const text = await file.text();
+  let out;
+  const srcExt2 = ext(file.name);
+  if (mode === 'strip') {
+    out = text.replace(/\s+/g, ' ').replace(/<!--[\s\S]*?-->/g, '').trim();
+  } else {
+    out = text.replace(/\s+/g, ' ').replace(/<!--[\s\S]*?-->/g,'').replace(/\s*=\s*/g,'=').replace(/;\s*/g,';').trim();
+  }
+  const mimes = { txt:'text/plain', html:'text/html', htm:'text/html', md:'text/markdown', pdf:'application/pdf', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
+  return { blob: new Blob([out], { type: mimes[srcExt2] || 'text/plain' }), ext: srcExt2 };
+}
+
+function addCompResult(origFile, result, grid, errMsg) {
+  const ext2 = result ? result.ext : ext(origFile.name);
+  const newName = origFile.name.replace(/\.[^.]+$/, '') + '_compressed.' + ext2;
+  const newSize = result ? result.blob.size : 0;
+  const saving = result ? Math.round((1 - newSize / origFile.size) * 100) : 0;
+
+  const div = document.createElement('div');
+  div.className = 'result-item';
+  if (!errMsg) {
+    const isImg = ['jpg','jpeg','png','webp','gif','bmp'].includes(ext2);
+    const previewUrl = isImg ? URL.createObjectURL(result.blob) : null;
+    div.innerHTML = `
+      ${previewUrl ? `<img class="img-preview" src="${previewUrl}" />` : ''}
+      <div class="result-item-header">
+        <span class="result-item-icon">${fileIcon(newName)}</span>
+        <span class="result-item-name">${newName}</span>
+      </div>
+      <div class="result-meta">
+        <span class="result-size">${fmtBytes(origFile.size)} → ${fmtBytes(newSize)}</span>
+        <span class="result-saving ${saving > 0 ? 'saving-pos' : 'saving-neg'}">${saving > 0 ? '−'+saving+'%' : '+'+Math.abs(saving)+'%'}</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-blue" onclick="this._dl()">Download</button>
+      </div>`;
+    div.querySelector('.btn-blue')._dl = () => triggerDownload(result.blob, newName);
+  } else {
+    div.innerHTML = `<div class="result-item-header"><span class="result-item-icon">⚠️</span><span class="result-item-name">${origFile.name}</span></div><div style="font-size:12px;color:#ff8a8f;margin-top:6px">${errMsg}</div>`;
+  }
+  grid.appendChild(div);
+}
+function clearCompResults() {
+  document.getElementById('comp-result-grid').innerHTML = '';
+  document.getElementById('comp-results').classList.remove('visible');
+}
+</script>
+</body>
+</html>
