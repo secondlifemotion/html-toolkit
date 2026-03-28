@@ -2,7 +2,7 @@
 
 A lightweight, privacy-focused suite of web utilities that run entirely in your browser. No data is ever uploaded to a server.
 
-[View Live Demo](https://secondlifemotion.github.io/html-toolkit/)
+[View Live Demo](https://secondlifemotion.github.io/html-toolkit/index.html)
 
 ---
 
